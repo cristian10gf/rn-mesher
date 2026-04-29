@@ -1,14 +1,30 @@
 import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native';
-import { ScanScreen } from './features/lidar/screens/ScanScreen';
-import { PreviewScreen } from './features/lidar/screens/PreviewScreen';
+import { StatusBar, StyleSheet, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { DIProvider } from './core/di/DIProvider';
+import { ScanScreen } from './features/lidar/presentation/screens/ScanScreen';
+import { PreviewScreen } from './features/lidar/presentation/screens/PreviewScreen';
+import { colors } from './theme';
 
 export default function App() {
   const [preview, setPreview] = useState(false);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      {preview ? <PreviewScreen /> : <ScanScreen onExported={() => setPreview(true)} />}
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
+      <DIProvider>
+        <View style={styles.shell}>
+          {preview ? (
+            <PreviewScreen onScanAgain={() => setPreview(false)} />
+          ) : (
+            <ScanScreen onExported={() => setPreview(true)} />
+          )}
+        </View>
+      </DIProvider>
+    </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  shell: { flex: 1, backgroundColor: colors.bg },
+});
