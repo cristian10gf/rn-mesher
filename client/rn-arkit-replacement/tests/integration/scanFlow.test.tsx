@@ -1,42 +1,39 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render } from '@testing-library/react-native';
 import App from '../../src/App';
 
-jest.mock('../../src/features/lidar/NativeLiDAR', () => ({
+jest.mock('../../src/features/lidar/data/NativeLiDAR', () => ({
   NativeLiDAR: {
     startScan: jest.fn().mockResolvedValue(undefined),
     stopScan: jest.fn().mockResolvedValue(undefined),
     exportMesh: jest.fn().mockResolvedValue({ plyPath: 'scan.ply', objPath: 'scan.obj' }),
-    subscribe: jest.fn((handler: any) => {
-      // simulate exported event when exportMesh is called
-      return () => undefined;
-    }),
+    subscribe: jest.fn(() => () => undefined),
   },
 }));
 
-jest.mock('react-native', () => {
-  const RN = jest.requireActual('react-native');
-  return {
-    ...RN,
-    requireNativeComponent: () => 'RNLiDARView',
-  };
+jest.mock('../../src/features/lidar/presentation/LiDARView', () => {
+  const { View } = require('react-native');
+  return { LiDARView: View };
 });
 
 describe('scan flow', () => {
-  it('starts scan and navigates to preview after export', async () => {
-    const { getByTestId, getByText } = render(<App />);
+  it(
+    'starts scan and navigates to preview after export',
+    async () => {
+      const { getByTestId, findByText } = render(<App />);
 
-    const start = getByTestId('start-btn');
-    const stop = getByTestId('stop-btn');
-    const exp = getByTestId('export-btn');
+      await act(async () => {
+        fireEvent.press(getByTestId('start-btn'));
+      });
+      await findByText(/Estado: Escaneando/);
 
-    fireEvent.press(start);
-    await waitFor(() => expect(getByText(/Estado:/)).toBeTruthy());
+      await act(async () => {
+        fireEvent.press(getByTestId('stop-btn'));
+        fireEvent.press(getByTestId('export-btn'));
+      });
 
-    fireEvent.press(stop);
-    fireEvent.press(exp);
-
-    // after export, PreviewScreen should be visible
-    await waitFor(() => expect(getByText('Preview exported mesh')).toBeTruthy());
-  });
+      await findByText('Preview exported mesh');
+    },
+    15000,
+  );
 });

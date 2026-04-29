@@ -3,8 +3,8 @@ import { render } from '@testing-library/react-native';
 import App from '../src/App';
 
 describe('App shell', () => {
-  it('renders isolated LiDAR scanner title', () => {
+  it('renders scanner headline', () => {
     const { getByText } = render(<App />);
-    expect(getByText('UniWhere LiDAR Scanner')).toBeTruthy();
+    expect(getByText(/UniWhere Scanner/)).toBeTruthy();
   });
 });
