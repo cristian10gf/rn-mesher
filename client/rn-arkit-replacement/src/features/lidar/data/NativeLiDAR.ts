@@ -1,5 +1,5 @@
 import { NativeEventEmitter, NativeModules } from 'react-native';
-import type { MeshOutput } from './types';
+import type { MeshOutput } from '../domain/types';
 
 type NativeLiDARShape = {
   startScan: () => Promise<void>;
@@ -11,8 +11,8 @@ const moduleRef = (NativeModules.RNLiDARBridgeModule ?? {}) as Partial<NativeLiD
 const emitter = new NativeEventEmitter((NativeModules.RNLiDAREventEmitter ?? moduleRef) as any);
 
 export const NativeLiDAR = {
-  startScan: () => moduleRef.startScan ? moduleRef.startScan() : Promise.resolve(),
-  stopScan: () => moduleRef.stopScan ? moduleRef.stopScan() : Promise.resolve(),
+  startScan: () => (moduleRef.startScan ? moduleRef.startScan() : Promise.resolve()),
+  stopScan: () => (moduleRef.stopScan ? moduleRef.stopScan() : Promise.resolve()),
   exportMesh: () =>
     moduleRef.exportMesh ? moduleRef.exportMesh() : Promise.resolve({ plyPath: '', objPath: '' }),
   subscribe: (handler: (event: unknown) => void) => {
