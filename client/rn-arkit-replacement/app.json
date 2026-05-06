@@ -25,7 +25,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.uniwhere.lidar",
       "infoPlist": {
-        "NSCameraUsageDescription": "Allow camera access to scan environments and build 3D meshes."
+        "NSCameraUsageDescription": "Allow camera access to scan environments and build 3D meshes.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
