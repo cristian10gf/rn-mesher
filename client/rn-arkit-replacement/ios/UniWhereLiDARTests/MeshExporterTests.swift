@@ -1,25 +1,55 @@
 import XCTest
 @testable import UniWhereLiDAR
+import simd
 
 final class MeshExporterTests: XCTestCase {
-    func test_writePLY_includesHeaderAndFaceCount() throws {
+    func test_exportWritesObjMtlTextureAndCounts() throws {
         let sut = MeshExporter()
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer {
+            try? FileManager.default.removeItem(at: folder)
+        }
 
-        // Build a tiny mesh: 3 vertices, 1 face (indices repeated to match expected test)
-        let v0 = ColoredVertex(position: SIMD3<Float>(0,0,0), normal: SIMD3<Float>(0,1,0))
-        let v1 = ColoredVertex(position: SIMD3<Float>(1,0,0), normal: SIMD3<Float>(0,1,0))
-        let v2 = ColoredVertex(position: SIMD3<Float>(0,1,0), normal: SIMD3<Float>(0,1,0))
-        var mesh = MeshSnapshot(vertices: [v0, v1, v2], indices: [0, 0, 0])
+        let mesh = ReconstructedMesh(
+            vertices: [
+                SIMD3<Float>(0, 0, 0),
+                SIMD3<Float>(1, 0, 0),
+                SIMD3<Float>(0, 1, 0),
+            ],
+            faces: [SIMD3<UInt32>(0, 1, 2)],
+            normals: Array(repeating: SIMD3<Float>(0, 1, 0), count: 3)
+        )
+        let result = try sut.export(mesh: mesh, folderName: "test-export", baseDirectory: folder)
 
-        let text = try sut.plyString(from: mesh)
-        XCTAssertTrue(text.contains("element face 1"))
-        XCTAssertTrue(text.contains("3 0 0 0"))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: result.objPath.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: result.mtlPath.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: result.texturePath.path))
+        XCTAssertEqual(result.vertexCount, 3)
+        XCTAssertEqual(result.faceCount, 1)
+        XCTAssertFalse(result.timestamp.isEmpty)
     }
 
-    func test_writeOBJ_referencesMTLAndTexture() throws {
+    func test_exportFiltersDegenerateFacesFromObjOutput() throws {
         let sut = MeshExporter()
-        let files = sut.exportBundlePaths(baseName: "scan")
-        XCTAssertTrue(files.texturePath.hasSuffix("texture.png") || files.texturePath.hasSuffix("_texture.png"))
-        XCTAssertTrue(files.mtlPath.hasSuffix(".mtl"))
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer {
+            try? FileManager.default.removeItem(at: folder)
+        }
+
+        let mesh = ReconstructedMesh(
+            vertices: [
+                SIMD3<Float>(0, 0, 0),
+                SIMD3<Float>(1, 0, 0),
+                SIMD3<Float>(0, 1, 0),
+            ],
+            faces: [
+                SIMD3<UInt32>(0, 1, 2),
+                SIMD3<UInt32>(0, 0, 2), // degenerate face
+            ],
+            normals: Array(repeating: SIMD3<Float>(0, 1, 0), count: 3)
+        )
+
+        let result = try sut.export(mesh: mesh, folderName: "test-filter", baseDirectory: folder)
+        XCTAssertEqual(result.faceCount, 1)
     }
 }
