@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "UniWhereLiDAR",
-    "slug": "uniwhere-lidar",
+    "slug": "rn-mesher",
     "scheme": "uniwhere-lidar",
     "plugins": [
       [
@@ -39,6 +39,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1b6051ce-c665-4144-ba98-3e6cec0241d8"
+      }
+    },
+    "owner": "cristiandavidgf"
   }
 }
