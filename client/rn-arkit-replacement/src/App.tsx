@@ -4,20 +4,21 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { DIProvider } from './core/di/DIProvider';
 import { ScanScreen } from './features/lidar/presentation/screens/ScanScreen';
 import { PreviewScreen } from './features/lidar/presentation/screens/PreviewScreen';
+import type { MeshOutput } from './features/lidar/domain/types';
 import { colors } from './theme';
 
 export default function App() {
-  const [preview, setPreview] = useState(false);
+  const [output, setOutput] = useState<MeshOutput | null>(null);
 
   return (
     <SafeAreaProvider>
       <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
       <DIProvider>
         <View style={styles.shell}>
-          {preview ? (
-            <PreviewScreen onScanAgain={() => setPreview(false)} />
+          {output ? (
+            <PreviewScreen output={output} onScanAgain={() => setOutput(null)} />
           ) : (
-            <ScanScreen onExported={() => setPreview(true)} />
+            <ScanScreen onExported={setOutput} />
           )}
         </View>
       </DIProvider>
