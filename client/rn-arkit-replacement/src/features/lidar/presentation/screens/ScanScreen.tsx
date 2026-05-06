@@ -5,18 +5,20 @@ import { colors, radius, space, type } from '../../../../theme';
 import { useLiDARScan } from '../useLiDARScan';
 import { LiDARView } from '../LiDARView';
 import { scanPhaseLabel } from '../scanPhaseLabel';
+import type { MeshOutput } from '../../domain/types';
 
-export function ScanScreen({ onExported }: { onExported: () => void }) {
+export function ScanScreen({ onExported }: { onExported: (output: MeshOutput) => void }) {
   const scan = useLiDARScan();
   const insets = useSafeAreaInsets();
   const phase = scan.state.phase;
   const isError = phase === 'error';
+  const canStop = phase === 'scanning';
+  const canExport = phase === 'stopped';
 
   const handleExport = async () => {
     const out = await scan.exportMesh();
     if (out) {
-      await scan.upload(out);
-      onExported();
+      onExported(out);
     }
   };
 
@@ -25,7 +27,9 @@ export function ScanScreen({ onExported }: { onExported: () => void }) {
       <View style={[styles.header, { paddingTop: Math.max(space.md, insets.top) }]}>
         <Text style={[type.overline, styles.tag]}>LiDAR</Text>
         <Text style={[type.headline, styles.title]}>UniWhere Scanner</Text>
-        <Text style={[type.body, styles.subtitle]}>Captura espacio 3D y exporta malla</Text>
+        <Text style={[type.body, styles.subtitle]}>
+          Estado: {scanPhaseLabel(phase)} | Tracking: {scan.state.trackingQuality}
+        </Text>
       </View>
 
       <View style={styles.viewerWrap}>
@@ -58,13 +62,21 @@ export function ScanScreen({ onExported }: { onExported: () => void }) {
             label="Iniciar"
             variant="primary"
             onPress={scan.start}
+            disabled={phase !== 'idle' && phase !== 'error' && phase !== 'exported'}
           />
-          <ActionButton testID="stop-btn" label="Detener" variant="muted" onPress={scan.stop} />
+          <ActionButton
+            testID="stop-btn"
+            label="Detener"
+            variant="muted"
+            onPress={scan.stop}
+            disabled={!canStop}
+          />
           <ActionButton
             testID="export-btn"
             label="Exportar"
             variant="accent"
             onPress={handleExport}
+            disabled={!canExport}
           />
         </View>
       </View>
@@ -77,21 +89,26 @@ function ActionButton({
   label,
   variant,
   onPress,
+  disabled,
 }: {
   testID?: string;
   label: string;
   variant: 'primary' | 'muted' | 'accent';
   onPress: () => void;
+  disabled?: boolean;
 }) {
   return (
     <Pressable
       testID={testID}
       onPress={onPress}
+      disabled={disabled}
+      accessibilityState={{ disabled: Boolean(disabled) }}
       style={({ pressed }) => [
         styles.btn,
         variant === 'primary' && styles.btnPrimary,
         variant === 'muted' && styles.btnMuted,
         variant === 'accent' && styles.btnAccent,
+        disabled && styles.btnDisabled,
         pressed && styles.btnPressed,
       ]}
       android_ripple={{ color: 'rgba(255,255,255,0.12)' }}
@@ -191,6 +208,7 @@ const styles = StyleSheet.create({
   btnPrimary: { backgroundColor: colors.accent },
   btnMuted: { backgroundColor: colors.surfaceElevated, borderWidth: 1, borderColor: colors.border },
   btnAccent: { backgroundColor: colors.accentMuted, borderWidth: 1, borderColor: colors.accent },
+  btnDisabled: { opacity: 0.45 },
   btnPressed: { opacity: 0.88 },
   btnText: { color: colors.textPrimary, textAlign: 'center' },
   btnTextInverse: { color: colors.bg, textAlign: 'center' },

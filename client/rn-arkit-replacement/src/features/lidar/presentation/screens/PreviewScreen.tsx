@@ -2,12 +2,14 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, radius, space, type } from '../../../../theme';
+import type { MeshOutput } from '../../domain/types';
 
 type Props = {
+  output: MeshOutput;
   onScanAgain?: () => void;
 };
 
-export function PreviewScreen({ onScanAgain }: Props) {
+export function PreviewScreen({ output, onScanAgain }: Props) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -17,10 +19,14 @@ export function PreviewScreen({ onScanAgain }: Props) {
           <Text style={styles.iconGlyph}>✓</Text>
         </View>
         <Text style={[type.overline, styles.overline]}>Exportación</Text>
-        <Text style={[type.headline, styles.title]}>Preview exported mesh</Text>
-        <Text style={[type.body, styles.body]}>
-          La malla se generó correctamente. Puedes volver al escáner para una nueva captura.
+        <Text style={[type.headline, styles.title]}>Exportación completada</Text>
+        <Text style={[type.body, styles.body]}>OBJ: {output.objPath}</Text>
+        <Text style={[type.body, styles.body]}>MTL: {output.mtlPath}</Text>
+        <Text style={[type.body, styles.body]}>PNG: {output.texturePath}</Text>
+        <Text style={[type.caption, styles.meta]}>
+          Vértices: {output.vertexCount} | Caras: {output.faceCount}
         </Text>
+        <Text style={[type.caption, styles.meta]}>Fecha: {output.timestamp}</Text>
         {onScanAgain ? (
           <Pressable
             testID="scan-again-btn"
@@ -59,6 +65,7 @@ const styles = StyleSheet.create({
   overline: { color: colors.accent, marginBottom: space.sm, textAlign: 'center' },
   title: { color: colors.textPrimary, textAlign: 'center', marginBottom: space.md },
   body: { color: colors.textSecondary, textAlign: 'center', maxWidth: 320 },
+  meta: { color: colors.textMuted, textAlign: 'center' },
   cta: {
     marginTop: space.xxl,
     backgroundColor: colors.accent,
