@@ -1,11 +1,10 @@
-import type { LiDARRepository } from '../domain/LiDARRepository';
-import type { MeshOutput } from '../domain/types';
+import type { LiDAREvent, LiDARRepository } from '../domain/LiDARRepository';
+import type { ScanConfig } from '../domain/types';
 import { NativeLiDAR } from './NativeLiDAR';
-import { uploadMeshArtifacts } from './MeshUploadService';
 
 export class LiDARRepositoryImpl implements LiDARRepository {
-  startScan() {
-    return NativeLiDAR.startScan();
+  startScan(config: ScanConfig) {
+    return NativeLiDAR.startScan(config);
   }
 
   stopScan() {
@@ -16,11 +15,7 @@ export class LiDARRepositoryImpl implements LiDARRepository {
     return NativeLiDAR.exportMesh();
   }
 
-  uploadMeshArtifacts(output: MeshOutput) {
-    return uploadMeshArtifacts(output);
-  }
-
-  subscribe(handler: (event: any) => void) {
+  subscribe(handler: (event: LiDAREvent) => void) {
     return NativeLiDAR.subscribe(handler);
   }
 }
