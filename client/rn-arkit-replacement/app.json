@@ -9,13 +9,14 @@
         {
           "launchMode": "most-recent"
         }
-      ]
+      ],
+      "./plugins/withLiDARSources"
     ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -24,6 +25,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.uniwhere.lidar",
+      "deploymentTarget": "16.0",
       "infoPlist": {
         "NSCameraUsageDescription": "Allow camera access to scan environments and build 3D meshes.",
         "ITSAppUsesNonExemptEncryption": false
