@@ -8,7 +8,7 @@ type UseLiDARApi = {
   state: ScanState;
   start: () => Promise<void>;
   stop: () => Promise<void>;
-  exportMesh: () => Promise<MeshOutput | undefined>;
+  exportMesh: (format?: 'ply' | 'glb' | 'gltf') => Promise<MeshOutput | undefined>;
 };
 
 const initialState: ScanState = {
@@ -99,10 +99,10 @@ export function useLiDARScan(repoOverride?: LiDARRepository): UseLiDARApi {
           }));
         }
       },
-      exportMesh: async () => {
+      exportMesh: async (format?: 'ply' | 'glb' | 'gltf') => {
         setState((prev) => ({ ...prev, phase: 'exporting' }));
         try {
-          const out = await useCases.exportMesh();
+          const out = await useCases.exportMesh(format);
           setState((prev) => ({ ...prev, phase: 'exported', output: out }));
           return out;
         } catch (err: any) {
