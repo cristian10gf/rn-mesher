@@ -7,9 +7,8 @@ describe('LiDAR use cases', () => {
       startScan: jest.fn().mockResolvedValue(undefined),
       stopScan: jest.fn().mockResolvedValue(undefined),
       exportMesh: jest.fn().mockResolvedValue({
-        objPath: '/tmp/scan.obj',
-        mtlPath: '/tmp/scan.mtl',
-        texturePath: '/tmp/texture.png',
+        path: '/tmp/scan.glb',
+        format: 'glb',
         vertexCount: 3,
         faceCount: 1,
         timestamp: '2026-05-05T19:00:00.000Z',
@@ -29,6 +28,6 @@ describe('LiDAR use cases', () => {
     });
     expect(repo.stopScan).toHaveBeenCalledTimes(1);
     expect(repo.exportMesh).toHaveBeenCalledTimes(1);
-    expect(out.objPath).toContain('scan.obj');
+    expect(out.path).toContain('scan.glb');
   });
 });

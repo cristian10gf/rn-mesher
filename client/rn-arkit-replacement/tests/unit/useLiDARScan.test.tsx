@@ -9,9 +9,8 @@ const createRepo = (): LiDARRepository => ({
   startScan: jest.fn().mockResolvedValue(undefined),
   stopScan: jest.fn().mockResolvedValue(undefined),
   exportMesh: jest.fn().mockResolvedValue({
-    objPath: '/tmp/scan.obj',
-    mtlPath: '/tmp/scan.mtl',
-    texturePath: '/tmp/texture.png',
+    path: '/tmp/scan.glb',
+    format: 'glb',
     vertexCount: 1200,
     faceCount: 800,
     timestamp: '2026-05-05T18:00:00.000Z',
@@ -51,7 +50,8 @@ describe('useLiDARScan', () => {
 
     expect(repo.exportMesh).toHaveBeenCalled();
     expect(result.current.state.phase).toBe('exported');
-    expect(result.current.state.output?.texturePath).toContain('texture.png');
+    expect(result.current.state.output?.path).toContain('scan.glb');
+    expect(result.current.state.output?.format).toBe('glb');
     expect(result.current.state.output?.vertexCount).toBeGreaterThan(0);
     expect(result.current.state.output?.faceCount).toBeGreaterThan(0);
     expect(result.current.state.output?.timestamp).toBe('2026-05-05T18:00:00.000Z');
@@ -63,9 +63,8 @@ describe('useLiDARScan', () => {
       startScan: jest.fn().mockResolvedValue(undefined),
       stopScan: jest.fn().mockResolvedValue(undefined),
       exportMesh: jest.fn().mockResolvedValue({
-        objPath: '/tmp/scan.obj',
-        mtlPath: '/tmp/scan.mtl',
-        texturePath: '/tmp/texture.png',
+        path: '/tmp/scan.glb',
+        format: 'glb',
         vertexCount: 1,
         faceCount: 1,
         timestamp: '2026-05-05T18:00:00.000Z',

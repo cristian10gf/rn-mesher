@@ -8,9 +8,8 @@ jest.mock('../../src/features/lidar/data/NativeLiDAR', () => ({
     startScan: jest.fn().mockResolvedValue(undefined),
     stopScan: jest.fn().mockResolvedValue(undefined),
     exportMesh: jest.fn().mockResolvedValue({
-      objPath: '/tmp/scan.obj',
-      mtlPath: '/tmp/scan.mtl',
-      texturePath: '/tmp/texture.png',
+      path: '/tmp/scan.glb',
+      format: 'glb',
       vertexCount: 1200,
       faceCount: 800,
       timestamp: '2026-05-05T18:00:00.000Z',
@@ -32,7 +31,7 @@ describe('scan flow', () => {
   it('keeps export disabled while stop is still in progress', async () => {
     const { getByTestId, findByText } = render(<App />);
 
-    expect(getByTestId('export-btn').props.accessibilityState.disabled).toBe(true);
+    expect(getByTestId('export-glb-btn').props.accessibilityState.disabled).toBe(true);
 
     await act(async () => {
       fireEvent.press(getByTestId('start-btn'));
@@ -49,16 +48,16 @@ describe('scan flow', () => {
     );
 
     fireEvent.press(getByTestId('stop-btn'));
-    expect(getByTestId('export-btn').props.accessibilityState.disabled).toBe(true);
+    expect(getByTestId('export-glb-btn').props.accessibilityState.disabled).toBe(true);
 
     await act(async () => {
       resolveStop?.();
     });
 
-    expect(getByTestId('export-btn').props.accessibilityState.disabled).toBe(false);
+    expect(getByTestId('export-glb-btn').props.accessibilityState.disabled).toBe(false);
   });
 
-  it('shows OBJ/MTL/PNG paths after export', async () => {
+  it('shows path and format after export', async () => {
     const { getByTestId, findByText } = render(<App />);
 
     await act(async () => {
@@ -68,11 +67,10 @@ describe('scan flow', () => {
       fireEvent.press(getByTestId('stop-btn'));
     });
     await act(async () => {
-      fireEvent.press(getByTestId('export-btn'));
+      fireEvent.press(getByTestId('export-glb-btn'));
     });
 
-    await findByText(/scan\.obj/i);
-    await findByText(/scan\.mtl/i);
-    await findByText(/texture\.png/i);
+    await findByText(/Ruta:/i);
+    await findByText(/Formato: GLB/i);
   });
 });
