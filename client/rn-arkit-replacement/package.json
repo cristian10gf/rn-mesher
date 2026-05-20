@@ -13,11 +13,12 @@
   },
   "dependencies": {
     "babel-preset-expo": "~54.0.10",
-    "expo": "~54.0.33",
+    "expo": "^55.0.25",
     "expo-dev-client": "~6.0.21",
-    "jest-expo": "~54.0.17",
+    "jest-expo": "^55.0.18",
     "react": "19.1.0",
     "react-native": "0.81.5",
+    "react-native-arkit-mesh-scanner": "github:AstoriaSystems/react-native-arkit-mesh-scanner",
     "react-native-safe-area-context": "~5.6.0"
   },
   "devDependencies": {
