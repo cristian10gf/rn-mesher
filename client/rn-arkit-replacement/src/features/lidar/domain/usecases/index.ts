@@ -9,13 +9,13 @@ const defaultScanConfig: ScanConfig = {
 export type LiDARUseCases = {
   start: (config?: ScanConfig) => Promise<void>;
   stop: () => Promise<void>;
-  exportMesh: () => Promise<MeshOutput>;
+  exportMesh: (format?: 'ply' | 'glb' | 'gltf') => Promise<MeshOutput>;
 };
 
 export function createLiDARUseCases(repo: LiDARRepository): LiDARUseCases {
   return {
     start: (config?: ScanConfig) => repo.startScan(config ?? defaultScanConfig),
     stop: () => repo.stopScan(),
-    exportMesh: () => repo.exportMesh(),
+    exportMesh: (format?: 'ply' | 'glb' | 'gltf') => repo.exportMesh(format ?? 'glb'),
   };
 }

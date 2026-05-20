@@ -12,6 +12,6 @@ export type Unsubscribe = () => void;
 export interface LiDARRepository {
   startScan: (config: ScanConfig) => Promise<void>;
   stopScan: () => Promise<void>;
-  exportMesh: () => Promise<MeshOutput>;
+  exportMesh: (format?: 'ply' | 'glb' | 'gltf') => Promise<MeshOutput>;
   subscribe: (handler: (event: LiDAREvent) => void) => Unsubscribe;
 }

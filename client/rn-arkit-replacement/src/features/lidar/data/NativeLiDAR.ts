@@ -1,37 +1,51 @@
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import { DeviceEventEmitter } from 'react-native';
 import type { LiDAREvent } from '../domain/LiDARRepository';
 import type { MeshOutput, ScanConfig } from '../domain/types';
+import type { ARKitMeshScannerRef } from 'react-native-arkit-mesh-scanner';
 
-type NativeLiDARShape = {
-  startScan: (config: ScanConfig) => Promise<void>;
-  stopScan: () => Promise<void>;
-  exportMesh: () => Promise<MeshOutput>;
-};
+let globalScannerRef: ARKitMeshScannerRef | null = null;
 
-const moduleRef = (NativeModules.RNLiDARBridgeModule ?? {}) as Partial<NativeLiDARShape>;
-const eventSource = NativeModules.RNLiDAREventEmitter ?? NativeModules.RNLiDARBridgeModule ?? null;
-const hasNativeEmitter =
-  !!eventSource &&
-  typeof (eventSource as { addListener?: unknown }).addListener === 'function' &&
-  typeof (eventSource as { removeListeners?: unknown }).removeListeners === 'function';
-const emitter = hasNativeEmitter ? new NativeEventEmitter(eventSource as any) : null;
+DeviceEventEmitter.addListener('LiDARScannerRefSet', (ref: ARKitMeshScannerRef | null) => {
+  globalScannerRef = ref;
+});
 
 function missingModuleError(method: string): Error {
-  return new Error(`RNLiDARBridgeModule.${method} unavailable (native module not linked or unsupported device).`);
+  return new Error(`Scanner reference missing for method ${method}. Make sure you are rendering the LiDARView component.`);
 }
 
 export const NativeLiDAR = {
-  startScan: (config: ScanConfig) =>
-    moduleRef.startScan ? moduleRef.startScan(config) : Promise.reject(missingModuleError('startScan')),
-  stopScan: () =>
-    moduleRef.stopScan ? moduleRef.stopScan() : Promise.reject(missingModuleError('stopScan')),
-  exportMesh: () =>
-    moduleRef.exportMesh
-      ? moduleRef.exportMesh()
-      : Promise.reject(missingModuleError('exportMesh')),
+  startScan: async (config: ScanConfig) => {
+    if (!globalScannerRef) return Promise.reject(missingModuleError('startScanning'));
+    globalScannerRef.startScanning();
+    DeviceEventEmitter.emit('onLiDAREvent', { type: 'scan_started' });
+  },
+  stopScan: async () => {
+    if (!globalScannerRef) return Promise.reject(missingModuleError('stopScanning'));
+    globalScannerRef.stopScanning();
+    DeviceEventEmitter.emit('onLiDAREvent', { type: 'scan_stopped' });
+  },
+  exportMesh: async (format: 'ply' | 'glb' | 'gltf' = 'glb') => {
+    if (!globalScannerRef) return Promise.reject(missingModuleError('exportMesh'));
+    
+    const filename = `scan-${Date.now()}.${format}`;
+    const result = await globalScannerRef.exportMesh(filename);
+    
+    const out: MeshOutput = {
+      path: result.path,
+      format: format,
+      vertexCount: result.vertexCount,
+      faceCount: result.faceCount,
+      timestamp: new Date().toISOString()
+    };
+    
+    DeviceEventEmitter.emit('onLiDAREvent', { type: 'export_completed', payload: out });
+    return out;
+  },
   subscribe: (handler: (event: LiDAREvent) => void) => {
-    if (!emitter || typeof emitter.addListener !== 'function') return () => undefined;
-    const sub = emitter.addListener('onMeshUpdate', handler as any);
+    const sub = DeviceEventEmitter.addListener('onLiDAREvent', handler);
     return () => sub.remove();
   },
+  emitEvent: (event: LiDAREvent) => {
+    DeviceEventEmitter.emit('onLiDAREvent', event);
+  }
 };

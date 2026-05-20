@@ -18,9 +18,8 @@ export type ScanErrorCode =
   | 'export_failed';
 
 export interface MeshOutput {
-  objPath: string;
-  mtlPath: string;
-  texturePath: string;
+  path: string;
+  format: 'ply' | 'glb' | 'gltf';
   vertexCount: number;
   faceCount: number;
   timestamp: string;

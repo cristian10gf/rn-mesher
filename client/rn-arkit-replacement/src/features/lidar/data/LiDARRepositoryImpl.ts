@@ -11,8 +11,8 @@ export class LiDARRepositoryImpl implements LiDARRepository {
     return NativeLiDAR.stopScan();
   }
 
-  exportMesh() {
-    return NativeLiDAR.exportMesh();
+  exportMesh(format?: 'ply' | 'glb' | 'gltf') {
+    return NativeLiDAR.exportMesh(format);
   }
 
   subscribe(handler: (event: LiDAREvent) => void) {
