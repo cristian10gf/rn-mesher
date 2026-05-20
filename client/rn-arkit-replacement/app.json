@@ -10,6 +10,12 @@
           "launchMode": "most-recent"
         }
       ],
+      [
+        "expo-build-properties",
+        {
+          "ios": { "deploymentTarget": "16.0" }
+        }
+      ],
       "./plugins/withLiDARSources"
     ],
     "version": "1.0.0",
@@ -25,7 +31,6 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.uniwhere.lidarapp",
-      "deploymentTarget": "16.0",
       "infoPlist": {
         "NSCameraUsageDescription": "Allow camera access to scan environments and build 3D meshes.",
         "ITSAppUsesNonExemptEncryption": false

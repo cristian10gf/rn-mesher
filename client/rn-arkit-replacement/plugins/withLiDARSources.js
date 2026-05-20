@@ -2,9 +2,7 @@ const { withXcodeProject } = require('@expo/config-plugins');
 const path = require('path');
 const fs = require('fs');
 
-const LIDAR_GROUP = 'UniWhereLiDAR';
-const SOURCE_DIRS = ['Export', 'Mesh', 'Native', 'Scanning'];
-const TEST_GROUP = 'UniWhereLiDARTests';
+const SOURCE_SUBDIRS = ['Export', 'Mesh', 'Native', 'Scanning'];
 
 function collectSwiftFiles(dir) {
   if (!fs.existsSync(dir)) return [];
@@ -16,15 +14,17 @@ function collectSwiftFiles(dir) {
 const withLiDARSources = (config) =>
   withXcodeProject(config, (cfg) => {
     const project = cfg.modResults;
-    const iosDir = path.join(cfg.modRequest.platformProjectRoot);
+    const iosDir = cfg.modRequest.platformProjectRoot;
+    // modules/LiDAR/ios/ sits one level above ios/
+    const lidarIosDir = path.join(iosDir, '..', 'modules', 'LiDAR', 'ios');
 
     const allFiles = [];
-    for (const sub of SOURCE_DIRS) {
-      const dir = path.join(iosDir, LIDAR_GROUP, sub);
+    for (const sub of SOURCE_SUBDIRS) {
+      const dir = path.join(lidarIosDir, 'Sources', sub);
       allFiles.push(...collectSwiftFiles(dir));
     }
 
-    const testDir = path.join(iosDir, TEST_GROUP);
+    const testDir = path.join(lidarIosDir, 'Tests', 'UniWhereLiDARTests');
     const testFiles = collectSwiftFiles(testDir);
 
     const targetName = cfg.modRequest.projectName;
