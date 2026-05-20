@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "UniWhereLiDAR",
-    "slug": "rn-mesher",
+    "slug": "uniwhere",
     "scheme": "uniwhere-lidar",
     "plugins": [
       [
@@ -24,7 +24,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.uniwhere.lidar",
+      "bundleIdentifier": "com.uniwhere.lidarapp",
       "deploymentTarget": "16.0",
       "infoPlist": {
         "NSCameraUsageDescription": "Allow camera access to scan environments and build 3D meshes.",
@@ -45,9 +45,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "1b6051ce-c665-4144-ba98-3e6cec0241d8"
+        "projectId": "68efbb98-64af-4b79-b0b3-5c08dba65eaf"
       }
     },
-    "owner": "cristiandavidgf"
+    "owner": "strangerteams_devs"
   }
 }
