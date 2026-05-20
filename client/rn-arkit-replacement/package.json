@@ -20,7 +20,8 @@
     "react": "19.1.0",
     "react-native": "0.81.5",
     "react-native-arkit-mesh-scanner": "github:AstoriaSystems/react-native-arkit-mesh-scanner",
-    "react-native-safe-area-context": "~5.6.0"
+    "react-native-safe-area-context": "~5.6.0",
+    "undefined": "github:AstoriaSystems/react-native-arkit-mesh-scanner"
   },
   "devDependencies": {
     "@testing-library/jest-native": "^5.4.3",
