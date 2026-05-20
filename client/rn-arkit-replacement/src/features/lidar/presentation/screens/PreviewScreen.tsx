@@ -20,9 +20,8 @@ export function PreviewScreen({ output, onScanAgain }: Props) {
         </View>
         <Text style={[type.overline, styles.overline]}>Exportación</Text>
         <Text style={[type.headline, styles.title]}>Exportación completada</Text>
-        <Text style={[type.body, styles.body]}>OBJ: {output.objPath}</Text>
-        <Text style={[type.body, styles.body]}>MTL: {output.mtlPath}</Text>
-        <Text style={[type.body, styles.body]}>PNG: {output.texturePath}</Text>
+        <Text style={[type.body, styles.body]}>Ruta: {output.path}</Text>
+        <Text style={[type.body, styles.body]}>Formato: {output.format.toUpperCase()}</Text>
         <Text style={[type.caption, styles.meta]}>
           Vértices: {output.vertexCount} | Caras: {output.faceCount}
         </Text>

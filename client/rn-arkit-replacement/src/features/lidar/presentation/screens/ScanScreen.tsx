@@ -15,8 +15,8 @@ export function ScanScreen({ onExported }: { onExported: (output: MeshOutput) =>
   const canStop = phase === 'scanning';
   const canExport = phase === 'stopped';
 
-  const handleExport = async () => {
-    const out = await scan.exportMesh();
+  const handleExport = async (format: 'ply' | 'glb' | 'gltf') => {
+    const out = await scan.exportMesh(format);
     if (out) {
       onExported(out);
     }
@@ -71,11 +71,28 @@ export function ScanScreen({ onExported }: { onExported: (output: MeshOutput) =>
             onPress={scan.stop}
             disabled={!canStop}
           />
+        </View>
+
+        <View style={styles.actions}>
           <ActionButton
-            testID="export-btn"
-            label="Exportar"
+            testID="export-ply-btn"
+            label="PLY"
             variant="accent"
-            onPress={handleExport}
+            onPress={() => handleExport('ply')}
+            disabled={!canExport}
+          />
+          <ActionButton
+            testID="export-glb-btn"
+            label="GLB"
+            variant="accent"
+            onPress={() => handleExport('glb')}
+            disabled={!canExport}
+          />
+          <ActionButton
+            testID="export-gltf-btn"
+            label="GLTF"
+            variant="accent"
+            onPress={() => handleExport('gltf')}
             disabled={!canExport}
           />
         </View>
